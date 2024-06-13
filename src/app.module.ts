@@ -9,17 +9,21 @@ import { UtilsModule } from './utils/utils.module';
 
 import { UsersModule } from './modules/users/users.module';
 import { LocationsModule } from './modules/locations/locations.module';
+import { MessagesModule } from './modules/messages/messages.module';
+import { ApisModule } from './apis/apis.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
+
     DatabaseModule,
     TaskSchedulerModule,
     UtilsModule,
 
     UsersModule,
     LocationsModule,
-
-    ScheduleModule.forRoot(),
+    MessagesModule,
+    ApisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

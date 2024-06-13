@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { UsersRepository } from './repositories/user.repository';
+import { UsersRepository } from './repositories/users.repository';
 import { IsValidLocationConstraint } from './validators/is-valid-location.constraint';
 import { IsDateOnlyFormatConstraint } from './validators/is-date-only-format.constraint';
 
@@ -13,5 +13,6 @@ import { IsDateOnlyFormatConstraint } from './validators/is-date-only-format.con
     IsValidLocationConstraint,
     IsDateOnlyFormatConstraint,
   ],
+  exports: [UsersRepository],
 })
 export class UsersModule {}

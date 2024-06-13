@@ -4,21 +4,43 @@ import { timeZonesNames } from '@vvo/tzdb';
 
 @Injectable()
 export class DateService {
-  getCurrentDate() {
-    return DateTime.now().toISO();
+  getCurrentUTCDate() {
+    return DateTime.now().setZone('UTC').toISO();
   }
 
-  parseDateStringByTimeZone(dateString: string, zone: string) {
-    const dateTime = DateTime.fromISO(dateString, { zone });
+  /**
+   * Will mutate the date based on time zone
+   */
+  parseDateOnlyStringByTimeZone(dateOnlyString: string, zone: string) {
+    const dateTime = DateTime.fromISO(dateOnlyString, { zone });
 
     return dateTime.toISO();
-    // return dateTime.setZone(zone).toISO();
   }
 
   addHours(dateString: string, hours: number) {
     const addedDateTime = DateTime.fromISO(dateString).plus({ hours });
 
     return addedDateTime.toISO();
+  }
+
+  getMinuteStart(dateString: string) {
+    const dateTime = DateTime.fromISO(dateString).startOf('minute');
+
+    return dateTime.toISO();
+  }
+
+  parseDateStringUTC(dateString: string) {
+    const dateTime = DateTime.fromISO(dateString).toUTC();
+
+    return {
+      year: dateTime.year,
+      month: dateTime.month,
+      day: dateTime.day,
+      hour: dateTime.hour,
+      minute: dateTime.minute,
+      second: dateTime.second,
+      zone: dateTime.zone,
+    };
   }
 
   getValidZones() {

@@ -6,7 +6,9 @@ import {
 
 @Injectable()
 @ValidatorConstraint()
-export class IsDateOnlyFormatConstraint implements ValidatorConstraintInterface {
+export class IsDateOnlyFormatConstraint
+  implements ValidatorConstraintInterface
+{
   validate(value: string) {
     // Pattern for format: yyyy-MM-dd
     const dateFormatPattern = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;

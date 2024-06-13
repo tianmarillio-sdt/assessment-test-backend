@@ -9,7 +9,9 @@ describe('IsDateOnlyFormatConstraint', () => {
       providers: [IsDateOnlyFormatConstraint],
     }).compile();
 
-    provider = module.get<IsDateOnlyFormatConstraint>(IsDateOnlyFormatConstraint);
+    provider = module.get<IsDateOnlyFormatConstraint>(
+      IsDateOnlyFormatConstraint,
+    );
   });
 
   it('should be defined', () => {

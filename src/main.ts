@@ -14,14 +14,16 @@ async function bootstrap() {
     }),
   );
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  // TODO: config module
+  // TODO: package.json scripts
 
   const swaggerConfig = new DocumentBuilder()
-    // FIXME: remove unused or edit
     .setTitle('API Documentation')
-    // .setDescription('The cats API description')
+    .setDescription('Assessment Test - Backend Developer')
     .setVersion('1.0')
-    // TODO: add tags
-    // .addTag('cats')
+    .addTag('users')
+    .addTag('locations')
+    .addTag('messages')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);

@@ -7,12 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum MessageType {
+  BIRTHDAY
+}
+
 model User {
-  id        String   @id @default(cuid())
-  firstName String
-  lastName  String
-  location  String
-  birthDate DateTime
+  id String @id @default(cuid())
+
+  messages Message[]
+
+  firstName  String
+  lastName   String
+  location   String
+  // birthDate => dateonly format (yyyy-MM-dd) as inputted by the user
+  birthDate  String
+  // birthdayAt => parsed birthDate at UTC time
+  // plus 9 hours offset (birthday every 09:00 am local time)
+  // in UTC Date ISO format (default database configuration)
+  birthdayAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  type           MessageType
+  isSent         Boolean     @default(false)
+  // Cron schedule date
+  sendScheduleAt DateTime
+  // Success sent date
+  sentAt         DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

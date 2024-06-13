@@ -1,13 +1,23 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { MessagesService } from 'src/modules/messages/messages.service';
 
 @Injectable()
 export class TaskSchedulerService {
-  private readonly logger = new Logger(TaskSchedulerService.name);
+  constructor(private messagesService: MessagesService) {}
 
-  @Cron('1 * * * * *')
-  handleCron() {
-    console.log('Logging 1 sec');
-    this.logger.debug('Called when the current second is 45');
+  /**
+   * Runs every 15 minutes,
+   * to also handle non-standard GMT offsets such as:
+   * GMT+09:30 - Australian Central Standard Time (ACST)
+   * GMT+05:45 - Nepal Time (NPT)
+   */
+  @Cron('*/15 * * * *')
+  async sendBirthdayMessages() {
+    console.log('JOB START: Sending birthday messages.');
+
+    await this.messagesService.sendBirthdayMessages();
+
+    console.log('JOB END: Sending birthday messages.');
   }
 }
