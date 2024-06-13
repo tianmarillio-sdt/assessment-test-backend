@@ -17,10 +17,6 @@ export class UsersService {
       createUserDto.location,
     );
 
-    // FIXME: remove console logs
-    // FIXME: remove comments
-    // TODO: PATCH
-
     const createdUser = await this.usersRepository.create({
       ...createUserDto,
       birthdayAt,

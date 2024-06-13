@@ -8,6 +8,7 @@ import { SendMessageApiService } from 'src/apis/send-message-api.service';
 @Injectable()
 export class MessagesService {
   private TEST_EMAIL: string;
+  private API_CALLS_PER_QUEUE: number;
 
   constructor(
     private messagesRepository: MessagesRepository,
@@ -16,49 +17,80 @@ export class MessagesService {
     private sendMessageApi: SendMessageApiService,
   ) {
     this.TEST_EMAIL = 'test@digitalenvision.com.au';
+    this.API_CALLS_PER_QUEUE = 50;
   }
 
   async sendBirthdayMessages() {
     const currentDate = this.dateService.getCurrentUTCDate();
     const sendScheduleAt = this.dateService.getMinuteStart(currentDate);
-    const parsedSendScheduleAt =
-      this.dateService.parseDateStringUTC(sendScheduleAt);
 
-    const users = await this.usersRepository.findBirthdayUsers({
-      month: parsedSendScheduleAt.month,
-      day: parsedSendScheduleAt.day,
-      hour: parsedSendScheduleAt.hour,
-      minute: parsedSendScheduleAt.minute,
-    });
+    const users = await this.usersRepository.findBirthdayUsers(sendScheduleAt);
 
-    // TODO: use promise.all, by 50 or 100 users
-    for (const user of users) {
-      const birthdayMessage = this.getBirthdayMessage(
-        user.firstName,
-        user.lastName,
-      );
+    /**
+     * Limit 50 API calls per queue to reduce server load
+     * Use Promise.all to send queue messages concurrently
+     */
+    const { length } = users;
+    const apiCallsPerQueue = this.API_CALLS_PER_QUEUE;
+    const queueCount = Math.ceil(length / apiCallsPerQueue);
 
-      await this.sendMessage(
-        user.id,
-        sendScheduleAt,
-        MessageType.BIRTHDAY,
-        birthdayMessage,
-      );
+    for (let i = 0; i < queueCount; i++) {
+      const start = i * apiCallsPerQueue;
+      const end = (i + 1) * apiCallsPerQueue;
+      const queueUsers = users.slice(start, end);
+
+      const sendMessagePromises = queueUsers.map((user) => {
+        const birthdayMessage = this.getBirthdayMessage(
+          user.firstName,
+          user.lastName,
+        );
+
+        return this.sendMessage(
+          user.id,
+          sendScheduleAt,
+          MessageType.BIRTHDAY,
+          birthdayMessage,
+        );
+      });
+
+      await Promise.all(sendMessagePromises);
+
+      // Sent counter
+      const counter = length < end ? length : end;
+      console.log(`Sent: ${counter} / ${length}`);
     }
   }
 
   async resendUnsentBirthdayMessages() {
     const messages = await this.messagesRepository.findAllUnsentMessages();
 
-    // TODO: limit API calls per Queue
-    for (const message of messages) {
-      const user = await this.usersRepository.findById(message.userId);
-      const birthdayMessage = this.getBirthdayMessage(
-        user.firstName,
-        user.lastName,
-      );
+    /**
+     * Limit 50 API calls per queue to reduce server load
+     * Use Promise.all to send queue messages concurrently
+     */
+    const { length } = messages;
+    const apiCallsPerQueue = this.API_CALLS_PER_QUEUE;
+    const queueCount = Math.ceil(length / apiCallsPerQueue);
 
-      await this.postSendMessageApi(message.id, birthdayMessage);
+    for (let i = 0; i < queueCount; i++) {
+      const start = i * apiCallsPerQueue;
+      const end = (i + 1) * apiCallsPerQueue;
+      const queueMessages = messages.slice(start, end);
+
+      const sendMessagePromises = queueMessages.map((message) => {
+        const birthdayMessage = this.getBirthdayMessage(
+          message.user.firstName,
+          message.user.lastName,
+        );
+
+        return this.postSendMessageApi(message.id, birthdayMessage);
+      });
+
+      await Promise.all(sendMessagePromises);
+
+      // Sent counter
+      const counter = length < end ? length : end;
+      console.log(`Sent: ${counter} / ${length}`);
     }
 
     return {

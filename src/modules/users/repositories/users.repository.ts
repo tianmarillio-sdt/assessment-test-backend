@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { Prisma, User } from '@prisma/client';
+import { DateService } from 'src/utils/date/date.service';
 
 @Injectable()
 export class UsersRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private dateService: DateService,
+  ) {}
 
   async create(data: Prisma.UserCreateInput) {
     return await this.prisma.user.create({
@@ -41,29 +45,21 @@ export class UsersRepository {
     });
   }
 
-  async findBirthdayUsers({
-    month,
-    day,
-    hour,
-    minute,
-  }: {
-    month: number;
-    day: number;
-    hour: number;
-    minute: number;
-  }) {
+  async findBirthdayUsers(sendScheduleAt: string) {
     /**
-     * Note: input should be based on UTC
+     * Note: sendScheduleAt should be based on UTC
      */
+    const parseResult = this.dateService.parseDateStringUTC(sendScheduleAt);
+
     const users: User[] = await this.prisma.$queryRaw`
       SELECT
         *
       FROM "User"
       WHERE
-        EXTRACT(MONTH FROM "birthdayAt") = ${month} AND
-        EXTRACT(DAY FROM "birthdayAt") = ${day} AND
-        EXTRACT(HOUR FROM "birthdayAt") = ${hour} AND
-        EXTRACT(MINUTE FROM "birthdayAt") = ${minute}
+        EXTRACT(MONTH FROM "birthdayAt") = ${parseResult.month} AND
+        EXTRACT(DAY FROM "birthdayAt") = ${parseResult.day} AND
+        EXTRACT(HOUR FROM "birthdayAt") = ${parseResult.hour} AND
+        EXTRACT(MINUTE FROM "birthdayAt") = ${parseResult.minute}
       ;
     `;
 
