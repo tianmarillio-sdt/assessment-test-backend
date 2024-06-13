@@ -5,7 +5,7 @@ import { timeZonesNames } from '@vvo/tzdb';
 @Injectable()
 export class DateService {
   getCurrentUTCDate() {
-    return DateTime.now().setZone('UTC').toISO();
+    return DateTime.now().toUTC().toISO();
   }
 
   /**
@@ -14,19 +14,19 @@ export class DateService {
   parseDateOnlyStringByTimeZone(dateOnlyString: string, zone: string) {
     const dateTime = DateTime.fromISO(dateOnlyString, { zone });
 
-    return dateTime.toISO();
+    return dateTime.toUTC().toISO();
   }
 
   addHours(dateString: string, hours: number) {
     const addedDateTime = DateTime.fromISO(dateString).plus({ hours });
 
-    return addedDateTime.toISO();
+    return addedDateTime.toUTC().toISO();
   }
 
   getMinuteStart(dateString: string) {
     const dateTime = DateTime.fromISO(dateString).startOf('minute');
 
-    return dateTime.toISO();
+    return dateTime.toUTC().toISO();
   }
 
   parseDateStringUTC(dateString: string) {

@@ -3,6 +3,6 @@ import { SendMessageApiService } from './send-message-api.service';
 
 @Module({
   providers: [SendMessageApiService],
-  exports: [SendMessageApiService]
+  exports: [SendMessageApiService],
 })
 export class ApisModule {}

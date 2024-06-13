@@ -3,9 +3,12 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const port = configService.get('port');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -14,8 +17,6 @@ async function bootstrap() {
     }),
   );
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  // TODO: config module
-  // TODO: package.json scripts
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('API Documentation')
@@ -28,9 +29,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
 
-  // FIXME: port to env
-  await app.listen(3000, () => {
-    console.log('Listening to port: 3000');
+  await app.listen(port, () => {
+    console.log(`Listening to port: ${port}`);
   });
 }
 bootstrap();
