@@ -38,6 +38,7 @@ This app uses Swagger API Documentation
 
 POST /users
 PATCH /users
+DELETE /users
 
 GET /locations
 
