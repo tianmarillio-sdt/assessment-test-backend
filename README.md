@@ -47,7 +47,7 @@ POST /messages/resend-birthday-messages
 - Location (attribute: location) is using IANA string format. List of valid locations can be accessed from GET /locations or visit https://en.wikipedia.org/wiki/List_of_tz_database_time_zones. For examples: America/New_York, Asia/Jakarta, Australia/Melbourne
 - Birthday date (attribute: birthDate) format: yyyy-MM-dd.
 - Endpoint POST /messages/resend-birthday-messages available to re-send unsent messages (failed to send messages).
-- Task scheduler for checking birthday (include sending message) runs every 15 minutes server time (e.g. 09:00, 09:15, 09:30, ...). This is in considerations of non-standard GMT offsets, such as GMT+09:30 Australian Central Standard Time (Australian Central Standard Time/ACST) or GMT+05:45(Nepal Time/NPT).
+- Task scheduler for checking birthday (include sending message) runs every 15 minutes server time (e.g. 09:00, 09:15, 09:30, ...). This is in considerations of non-standard GMT offsets, such as GMT+09:30 (Australian Central Standard Time/ACST) or GMT+05:45(Nepal Time/NPT).
 
 ## Tech Stacks & Notable Dependencies
 
