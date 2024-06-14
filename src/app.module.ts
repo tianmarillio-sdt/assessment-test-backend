@@ -12,7 +12,7 @@ import { UsersModule } from './modules/users/users.module';
 import { LocationsModule } from './modules/locations/locations.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import { ApisModule } from './apis/apis.module';
-import configuration from './modules/config/configuration';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
