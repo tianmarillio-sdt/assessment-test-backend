@@ -29,7 +29,9 @@ $ npm run dev
 
 ## API Documentation & Notes
 
-> API Documentation can be accessed after starting the development server at: {BASE_URL}/api
+This app uses Swagger API Documentation
+
+> Swagger API Documentation can be accessed after starting the development server at: {BASE_URL}/api
 
 ```bash
 # Available endpoints
